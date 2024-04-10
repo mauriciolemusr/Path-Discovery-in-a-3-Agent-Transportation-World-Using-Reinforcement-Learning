@@ -109,15 +109,14 @@ class Environment:
             return -0.1  # Small negative reward for each step to encourage efficiency
 
 
-
     def get_state(self, agent):
         """
         Gets the current state of the environment from the perspective of the given agent.
         returns tuple representing the state (agent_position, block_positions, dropoff_positions)
         """
         agent_position = agent.position
-        block_positions = self.pickup_locations
-        dropoff_positions = self.dropoff_locations
+        block_positions = tuple(self.pickup_locations)
+        dropoff_positions = tuple(self.dropoff_locations)
         return (agent_position, block_positions, dropoff_positions)
 
 
@@ -182,4 +181,4 @@ class Environment:
             if i < self.grid_size[0] - 1:
                 print('  |' + '_' * (4 * self.grid_size[1] - 1) + '|')
         print('  +' + '-' * (4 * self.grid_size[1] - 1) + '+')
-        
+            
