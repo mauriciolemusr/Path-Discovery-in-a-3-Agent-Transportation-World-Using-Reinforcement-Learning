@@ -45,6 +45,8 @@ def main():
     print("Experiment 1a:")
     total_rewards_1a, total_distances_1a, total_successes_1a = experiments.run_experiment1a(environment, agents, num_steps, initial_agent_positions)
     result_printer.print_results(agents, total_rewards_1a, total_distances_1a, total_successes_1a, num_steps)
+    
+    result_printer.visualize_attractive_paths(agents, environment)
 
     print("Experiment 1b:")
     total_rewards_1b, total_distances_1b, total_successes_1b = experiments.run_experiment1b(environment, agents, num_steps, initial_agent_positions)

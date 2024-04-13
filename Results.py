@@ -1,4 +1,7 @@
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 class ResultPrinter:
     def print_results(self, agents, total_rewards, total_distances, total_successes, num_steps):
@@ -120,3 +123,43 @@ class ResultPrinter:
             q_table_df = q_table_df.apply(lambda x: x.apply(lambda y: '{:.3f}'.format(y)))
             print(q_table_df.to_string(index=True))
             print()
+
+
+    def visualize_attractive_paths(self, agents, environment):
+        """
+        Visualize attractive paths based on learned Q-values.
+        """
+        for i, agent in enumerate(agents):
+            print(f"Attractive Paths for Agent {i + 1}:")
+            q_values = agent.q_table
+
+            # Identify most promising actions for each state
+            attractive_paths = {}
+            for state, actions in q_values.items():
+                agent_pos, _, _ = state
+                if agent_pos not in attractive_paths:
+                    attractive_paths[agent_pos] = []
+                max_q_value = max(actions.values())
+                best_actions = [action for action, q_value in actions.items() if q_value == max_q_value]
+                attractive_paths[agent_pos].extend(best_actions)
+
+            # Plot environment grid
+            plt.figure(figsize=(5, 5))
+            plt.imshow(environment.grid, cmap='binary')
+
+            # Highlight attractive paths
+            for position, actions in attractive_paths.items():
+                x, y = position
+                for action in actions:
+                    if action == 'up':
+                        plt.arrow(y, x, 0, -0.4, head_width=0.1, head_length=0.1, fc='red', ec='red')
+                    elif action == 'down':
+                        plt.arrow(y, x, 0, 0.4, head_width=0.1, head_length=0.1, fc='red', ec='red')
+                    elif action == 'left':
+                        plt.arrow(y, x, -0.4, 0, head_width=0.1, head_length=0.1, fc='red', ec='red')
+                    elif action == 'right':
+                        plt.arrow(y, x, 0.4, 0, head_width=0.1, head_length=0.1, fc='red', ec='red')
+
+            plt.title(f"Attractive Paths for Agent {i + 1}")
+            plt.axis('off')
+            plt.show()
