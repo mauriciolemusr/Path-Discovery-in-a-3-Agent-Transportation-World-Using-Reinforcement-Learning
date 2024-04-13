@@ -5,6 +5,7 @@ import seaborn as sns
 
 class ResultPrinter:
     def print_results(self, agents, total_rewards, total_distances, total_successes, num_steps):
+        # Print experiment results for each agent
         print("Experiment Results:")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -16,6 +17,7 @@ class ResultPrinter:
             print(f"  Average Distance per Step: {total_distances[i] / num_steps:.2f}")
             print()
 
+        # Print final Q-tables for each agent
         print("Final Q-Tables:")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -32,6 +34,7 @@ class ResultPrinter:
             print()
 
     def print_results_experiment2(self, agents, total_rewards, total_distances, total_successes, num_steps):
+        # Print experiment 2 results
         print("Experiment 2 Results:")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -43,6 +46,7 @@ class ResultPrinter:
             print(f"  Average Distance per Step: {total_distances[i] / num_steps:.2f}")
             print()
 
+        # Print final Q-tables for experiment 2
         print("Final Q-Tables for Experiment 2:")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -59,6 +63,7 @@ class ResultPrinter:
             print()
 
     def print_results_experiment3(self, agents, total_rewards, total_distances, total_successes, num_steps, learning_rate):
+        # Print experiment 3 results with learning rate
         print(f"Experiment 3 Results (Learning Rate: {learning_rate}):")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -70,6 +75,7 @@ class ResultPrinter:
             print(f"  Average Distance per Step: {total_distances[i] / num_steps:.2f}")
             print()
 
+        # Print final Q-tables for experiment 3 with learning rate
         print(f"Final Q-Tables for Experiment 3 (Learning Rate: {learning_rate}):")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -86,6 +92,7 @@ class ResultPrinter:
             print()
 
     def print_results_experiment4(self, agents, total_rewards_before, total_distances_before, total_successes_before, total_steps_before, total_rewards_after, total_distances_after, total_successes_after, total_steps_after):
+        # Print experiment 4 results
         print("Experiment 4 Results:")
         print("Before changing pickup locations:")
         for i, agent in enumerate(agents):
@@ -109,6 +116,7 @@ class ResultPrinter:
             print(f"  Average Distance per Step: {total_distances_after[i] / total_steps_after:.2f}")
             print()
 
+        # Print final Q-tables for experiment 4
         print("Final Q-Tables for Experiment 4:")
         for i, agent in enumerate(agents):
             print(f"Agent {i + 1}:")
@@ -123,7 +131,6 @@ class ResultPrinter:
             q_table_df = q_table_df.apply(lambda x: x.apply(lambda y: '{:.3f}'.format(y)))
             print(q_table_df.to_string(index=True))
             print()
-
 
     def visualize_attractive_paths(self, agents, environment):
         """
