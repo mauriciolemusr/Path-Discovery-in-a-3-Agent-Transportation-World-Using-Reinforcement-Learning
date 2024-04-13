@@ -1,8 +1,9 @@
-# Path Discovery in a 3-Agent Transportation World Using Reinforcement Learning 
+# COSC 4368 Group Project - Path Discovery in a 3-Agent Transportation World Using Reinforcement Learning 
 
 
 ## Overview
 
+Write something here
 
 ## Folder Structure
 
