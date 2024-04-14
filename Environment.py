@@ -1,8 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt  # For visualization
 from matplotlib.colors import ListedColormap
-from matplotlib.patches import FancyArrowPatch
-from mpl_toolkits.mplot3d import Axes3D
 
 class Environment:
     def __init__(self, grid_size, pickup_locations, dropoff_locations):
@@ -12,19 +10,32 @@ class Environment:
         self.dropoff_locations = dropoff_locations
         self.grid = np.zeros(grid_size, dtype=int)
         self.agents = []
+        self.dropoff_counts = {location: 0 for location in dropoff_locations}  
 
     # Method that adds an agent to the environment.
     def add_agent(self, agent):
         self.agents.append(agent)
 
-    # Method for resetting the environment by placing pickup locations, agents, and resetting agents' states.
+    # Method for resetting the environment between experiments
+    def reset_environment(self, initial_agent_positions):
+        self.grid = np.zeros(self.grid_size, dtype=int)
+        for pickup_location in self.pickup_locations:
+            self.grid[pickup_location] = 5  
+        for i, agent in enumerate(self.agents):
+            agent.position = initial_agent_positions[i]
+            agent.carrying_block = False  # Reset the carrying_block attribute
+            agent.position_frequency = [[0 for j in range(0, 5)] for i in range(0, 5)]
+        self.dropoff_counts = {location: 0 for location in self.dropoff_locations}  
+
+    # Method for resetting the environment if terminal state reached by placing pickup locations, agents, and resetting agents' states.
     def reset(self, initial_agent_positions):
         self.grid = np.zeros(self.grid_size, dtype=int)
         for pickup_location in self.pickup_locations:
-            self.grid[pickup_location] = 1
+            self.grid[pickup_location] = 5  
         for i, agent in enumerate(self.agents):
             agent.position = initial_agent_positions[i]
-            agent.reset()
+            agent.carrying_block = False  # Reset the carrying_block attribute
+        self.dropoff_counts = {location: 0 for location in self.dropoff_locations}  
 
     # Method for executing one step in the environment for each agent.
     def step(self):
@@ -39,13 +50,13 @@ class Environment:
 
         # Determining the new position based on the action.
         if action == 'up':
-            new_x, new_y = x, y - 1
-        elif action == 'down':
-            new_x, new_y = x, y + 1
-        elif action == 'left':
             new_x, new_y = x - 1, y
-        elif action == 'right':
+        elif action == 'down':
             new_x, new_y = x + 1, y
+        elif action == 'left':
+            new_x, new_y = x, y - 1
+        elif action == 'right':
+            new_x, new_y = x, y + 1
         else:
             new_x, new_y = x, y
 
@@ -54,11 +65,15 @@ class Environment:
             agent.position = (new_x, new_y)
 
         # Executing pickup and dropoff actions and calculating reward.
-        if action == 'pickup' and self.grid[x, y] == 1 and not agent.carrying_block:
-            self.grid[x, y] = 0
+        if action == 'pickup' and self.grid[x, y] > 0 and not agent.carrying_block:  
+            self.grid[x, y] -= 1  # Change this line
             agent.carrying_block = True
-        elif action == 'dropoff' and (x, y) in self.dropoff_locations and agent.carrying_block:
+        elif action == 'dropoff' and (x, y) in self.dropoff_locations and agent.carrying_block and self.dropoff_counts[(x, y)] < 5:  # Change this line
             agent.carrying_block = False
+            self.dropoff_counts[(x, y)] += 1  
+        
+        # Update frequency matrix after agent action
+        agent.update_position_freq()
 
         reward = self.calculate_reward(agent)
         return reward
@@ -76,9 +91,9 @@ class Environment:
     def calculate_reward(self, agent):
         x, y = agent.position
 
-        if agent.carrying_block and (x, y) in self.dropoff_locations:
+        if agent.carrying_block and (x, y) in self.dropoff_locations and self.dropoff_counts[(x, y)] < 5:  # Change this line
             return 10.0   # Reward for successful dropoff
-        elif not agent.carrying_block and (x, y) in self.pickup_locations and self.grid[x, y] == 1:
+        elif not agent.carrying_block and (x, y) in self.pickup_locations and self.grid[x, y] > 0:
             return 1.0  # Reward for successful pickup
         else:
             return 0.0  # No reward or penalty for other steps
@@ -95,67 +110,24 @@ class Environment:
         actions = ['up', 'down', 'left', 'right']
         x, y = agent.position
 
-        if self.grid[x, y] == 1 and not agent.carrying_block:
+        if self.grid[x, y] > 0 and not agent.carrying_block:
             actions.append('pickup')
-        if agent.carrying_block and (x, y) in self.dropoff_locations:
+        if agent.carrying_block and (x, y) in self.dropoff_locations and self.dropoff_counts[(x, y)] < 5:  # Change this line
             actions.append('dropoff')
 
         return actions
 
     # Checks if the environment has reached a terminal state where all pickups are delivered.
     def is_terminal_state(self):
-        if not any(self.grid[location] == 1 for location in self.pickup_locations) and \
-                all(agent.carrying_block == False for agent in self.agents):
+        if all(count == 5 for count in self.dropoff_counts.values()):  
             return True
         return False
-
-
-    # Method to visualize the agent's path on the grid.
-    def visualize_agent_path(self, agent, path):
-        fig, ax = plt.subplots()
-        ax.set_xticks(np.arange(-0.5, self.grid_size[0], 1))
-        ax.set_yticks(np.arange(-0.5, self.grid_size[1], 1))
-        ax.grid(which='both')
-        ax.set_aspect('equal')
-        ax.imshow(self.grid, cmap='Greys', origin='lower')
-
-        # Mark starting point
-        start_x, start_y = path[0]
-        ax.plot(start_x, start_y, 'ro', markersize=10)
-
-        # Mark ending point
-        end_x, end_y = path[-1]
-        ax.plot(end_x, end_y, 'bo', markersize=10)
-
-        # Draw arrows and color cells
-        for i in range(len(path) - 1):
-            x, y = path[i]
-            next_x, next_y = path[i + 1]
-            dx = next_x - x
-            dy = next_y - y
-            ax.arrow(x, y, dx, dy, head_width=0.2, head_length=0.2, fc='k', ec='k')
-
-        # Set colors for visualization
-        cmap = plt.cm.get_cmap('cool')
-        norm = plt.Normalize(0, len(path))
-        for i, (x, y) in enumerate(path):
-            ax.add_patch(plt.Rectangle((x - 0.5, y - 0.5), 1, 1, color=cmap(norm(i))))
-
-        # Add legend
-        legend_elements = [
-            plt.Line2D([0], [0], marker='o', color='w', label='Starting Point', markerfacecolor='r', markersize=10),
-            plt.Line2D([0], [0], marker='o', color='w', label='Ending Point', markerfacecolor='b', markersize=10),
-            FancyArrowPatch((0,0), (1,1), color='black', label='Agent Path', arrowstyle='-|>', mutation_scale=15)
-        ]
-        ax.legend(handles=legend_elements, loc='upper right')
-
-        plt.show()
 
 
     # Visualizes the environment grid, pickup locations, drop-off locations, and agent positions from the environment class.
     def visualize(self):
         # Define the color map for the grid
-        cmap = ListedColormap(['white'])
+        cmap = ListedColormap(['white', 'gray', 'red', 'blue', 'green'])  # Update the color map
         
         # Create a figure and axis with a specified size
         fig, ax = plt.subplots(figsize=(8, 8))
@@ -165,14 +137,14 @@ class Environment:
         
         # Loop over the data dimensions and create text annotations
         for pickup_location in self.pickup_locations:
-            ax.text(pickup_location[1], pickup_location[0], 'Pickup', ha='center', va='center', color='blue', fontsize=12, weight='bold')
+            ax.text(pickup_location[1], pickup_location[0], f'P({self.grid[pickup_location]})', ha='center', va='center', color='black', fontsize=10)  # Update the text annotation
 
         for dropoff_location in self.dropoff_locations:
-            ax.text(dropoff_location[1], dropoff_location[0], 'Dropoff', ha='center', va='center', color='green', fontsize=12, weight='bold')
+            ax.text(dropoff_location[1], dropoff_location[0], f'D({self.dropoff_counts[dropoff_location]})', ha='center', va='center', color='black', fontsize=10)  # Update the text annotation
 
-        for agent in self.agents:
+        for i, agent in enumerate(self.agents):
             x, y = agent.position
-            ax.text(y, x, 'Agent', ha='center', va='center', color='red', fontsize=12, weight='bold')
+            ax.text(y, x, f'A{i+1}', ha='center', va='center', color='white', fontsize=10)  # Update the text annotation
         
         # Draw grid lines
         ax.set_xticks(np.arange(-0.5, self.grid_size[1], 1), minor=True)
@@ -184,7 +156,8 @@ class Environment:
         ax.tick_params(which='both', bottom=False, left=False, labelbottom=False, labelleft=False)
 
         # Set the title
-        ax.set_title('Environment', fontsize=16, weight='bold')
+        ax.set_title('Environment', fontsize=16)
 
         # Display the plot
-        plt.show()
+        plt.show() 
+

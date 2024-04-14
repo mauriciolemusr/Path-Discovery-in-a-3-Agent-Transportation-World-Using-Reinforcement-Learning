@@ -8,7 +8,7 @@ class Experiments:
         total_successes = [0] * len(agents)
         total_distances = [0] * len(agents)
 
-        environment.reset(initial_agent_positions)
+        environment.reset_environment(initial_agent_positions)
 
         for step in range(num_steps):
             # Switching between exploration and exploitation phases based on step count.
@@ -57,7 +57,7 @@ class Experiments:
         total_successes = [0] * len(agents)
         total_distances = [0] * len(agents)
 
-        environment.reset(initial_agent_positions)
+        environment.reset_environment(initial_agent_positions)
 
         # Initialize state and action for each agent
         states = []
@@ -120,7 +120,7 @@ class Experiments:
         total_successes = [0] * len(agents)
         total_distances = [0] * len(agents)
 
-        environment.reset(initial_agent_positions)
+        environment.reset_environment(initial_agent_positions)
 
         for step in range(num_steps):
             # Switching between exploration and exploitation phases based on step count.
@@ -167,7 +167,7 @@ class Experiments:
         total_steps_after = 0
 
         terminal_state_count = 0
-        environment.reset(initial_agent_positions)
+        environment.reset_environment(initial_agent_positions)
 
         for step in range(num_steps):
             # Switching between exploration and exploitation phases based on step count.
@@ -224,4 +224,4 @@ class Experiments:
         )
 
     def calculate_distance(self, position1, position2):
-        return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1])
+        return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1]) 

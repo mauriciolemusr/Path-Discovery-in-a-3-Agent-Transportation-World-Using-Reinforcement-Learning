@@ -2,9 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from matplotlib.patches import FancyArrowPatch
-
-
 class ResultPrinter:
     def print_results(self, agents, total_rewards, total_distances, total_successes, num_steps):
         # Print experiment results for each agent
@@ -102,9 +99,14 @@ class ResultPrinter:
             print(f"  Total Reward: {total_rewards_before[i]:.2f}")
             print(f"  Total Success: {total_successes_before[i]}")
             print(f"  Total Distance: {total_distances_before[i]}")
-            print(f"  Average Reward per Step: {total_rewards_before[i] / total_steps_before:.4f}")
-            print(f"  Average Success per Step: {total_successes_before[i] / total_steps_before:.4f}")
-            print(f"  Average Distance per Step: {total_distances_before[i] / total_steps_before:.2f}")
+            if total_steps_before != 0:
+                print(f"  Average Reward per Step: {total_rewards_before[i] / total_steps_before:.4f}")
+                print(f"  Average Success per Step: {total_successes_before[i] / total_steps_before:.4f}")
+                print(f"  Average Distance per Step: {total_distances_before[i] / total_steps_before:.2f}")
+            else:
+                print("  Average Reward per Step: N/A")
+                print("  Average Success per Step: N/A")
+                print("  Average Distance per Step: N/A")
             print()
 
         print("After changing pickup locations:")
@@ -113,9 +115,14 @@ class ResultPrinter:
             print(f"  Total Reward: {total_rewards_after[i]:.2f}")
             print(f"  Total Success: {total_successes_after[i]}")
             print(f"  Total Distance: {total_distances_after[i]}")
-            print(f"  Average Reward per Step: {total_rewards_after[i] / total_steps_after:.4f}")
-            print(f"  Average Success per Step: {total_successes_after[i] / total_steps_after:.4f}")
-            print(f"  Average Distance per Step: {total_distances_after[i] / total_steps_after:.2f}")
+            if total_steps_after != 0:
+                print(f"  Average Reward per Step: {total_rewards_after[i] / total_steps_after:.4f}")
+                print(f"  Average Success per Step: {total_successes_after[i] / total_steps_after:.4f}")
+                print(f"  Average Distance per Step: {total_distances_after[i] / total_steps_after:.2f}")
+            else:
+                print("  Average Reward per Step: N/A")
+                print("  Average Success per Step: N/A")
+                print("  Average Distance per Step: N/A")
             print()
 
         # Print final Q-tables for experiment 4
@@ -134,107 +141,58 @@ class ResultPrinter:
             print(q_table_df.to_string(index=True))
             print()
 
+    # visualize_position_freq function visualizes the frequency each agent travels across the entire experiment as separate heatmaps
+    def visualize_position_freq(self, environment):
+        for i, agent in enumerate(environment.agents):            
+            plt.figure()
+            if i == 0:
+                plt.title("Position Frequency for Agent \"Black\"")
+                print("Position Frequency Map for Agent \"Black\":")
+            elif i == 1:
+                plt.title("Position Frequency for Agent \"Red\"")
+                print("Position Frequency Map for Agent \"Red\":")
+            elif i == 2:
+                plt.title("Position Frequency for Agent \"Blue\"")
+                print("Position Frequency Map for Agent \"Blue\":")
+            sns.heatmap(agent.position_frequency, annot=True, fmt='g')
+            plt.show()        
 
-    def visualize_attractive_paths1(self, agents, environment):    
-        num_agents = len(agents)
-        fig, axs = plt.subplots(1, num_agents, figsize=(5*num_agents, 5))
-        fig.suptitle('Agent Paths Visualization')
-
+    # visualize_attractive_paths function visualizes the most attractive paths for each grid space based on highest q-table value
+    def visualize_attractive_paths(self, agents, environment):
+        """
+        Visualize attractive paths based on learned Q-values.
+        """
         for i, agent in enumerate(agents):
-            ax = axs[i] if num_agents > 1 else axs
-            ax.imshow(environment.grid, cmap='viridis', interpolation='nearest', vmin=-1, vmax=num_agents)
+            print(f"Attractive Paths for Agent {i + 1}:")
+            q_values = agent.q_table
 
-            # Plot agent's path
-            for j in range(len(agent.path) - 1):
-                current_pos = agent.path[j]
-                next_pos = agent.path[j + 1]
-                ax.quiver(current_pos[1], current_pos[0], next_pos[1] - current_pos[1], next_pos[0] - current_pos[0],
-                        angles='xy', scale_units='xy', scale=1, color=f'C{i}', width=0.004, headwidth=3, headlength=4)
+            # Identify most promising actions for each state
+            attractive_paths = {}
+            for state, actions in q_values.items():
+                agent_pos, _, _ = state
+                if agent_pos not in attractive_paths:
+                    attractive_paths[agent_pos] = []
+                max_q_value = max(actions.values())
+                best_actions = [action for action, q_value in actions.items() if q_value == max_q_value]
+                attractive_paths[agent_pos].extend(best_actions)
 
-            # Plot starting point
-            start_pos = agent.path[0]
-            ax.plot(start_pos[1], start_pos[0], marker='s', markersize=10, color=f'C{i}', label=f'Agent {i+1} Start')
+            # Plot environment grid
+            plt.figure(figsize=(5, 5))
+            plt.imshow(environment.grid, cmap='binary')
 
-            # Plot ending point
-            end_pos = agent.path[-1]
-            ax.plot(end_pos[1], end_pos[0], marker='o', markersize=10, color=f'C{i}', label=f'Agent {i+1} End')
+            # Highlight attractive paths
+            for position, actions in attractive_paths.items():
+                x, y = position
+                for action in actions:
+                    if action == 'up':
+                        plt.arrow(y, x, 0, -0.4, head_width=0.1, head_length=0.1, fc='red', ec='red')
+                    elif action == 'down':
+                        plt.arrow(y, x, 0, 0.4, head_width=0.1, head_length=0.1, fc='red', ec='red')
+                    elif action == 'left':
+                        plt.arrow(y, x, -0.4, 0, head_width=0.1, head_length=0.1, fc='red', ec='red')
+                    elif action == 'right':
+                        plt.arrow(y, x, 0.4, 0, head_width=0.1, head_length=0.1, fc='red', ec='red')
 
-            ax.set_title(f'Agent {i+1} Path')
-            ax.legend()
-
-            # Set axis labels
-            ax.set_xlabel('Columns')
-            ax.set_ylabel('Rows')
-
-        plt.tight_layout()
-        plt.show()
-
-    
-    def visualize_attractive_paths2(self, agents, environment):
-        fig, axs = plt.subplots(1, len(agents), figsize=(10, 4))  # Create subplots for each agent
-
-        for idx, agent in enumerate(agents):
-            grid = np.zeros(environment.grid_size)
-
-            # Mark starting and ending points
-            start_pos = agent.path[0]
-            end_pos = agent.path[-1]
-            if isinstance(end_pos, tuple):
-                row, col = end_pos
-                grid[start_pos] = agent.id + 2
-                grid[row, col] = -1
-            else:
-                grid[start_pos] = agent.id + 2
-                grid[end_pos] = -1
-
-            # Draw arrows for the agent's path and color cells
-            for i in range(len(agent.path) - 1):
-                current_pos = agent.path[i]
-                next_pos = agent.path[i + 1]
-                if isinstance(next_pos, tuple):
-                    dx = next_pos[1] - current_pos[1]
-                    dy = next_pos[0] - current_pos[0]
-                    arrow = FancyArrowPatch(
-                        (current_pos[1], current_pos[0]),  # Start position
-                        (next_pos[1], next_pos[0]),  # End position
-                        color='lavender', arrowstyle='->', mutation_scale=10, linewidth=1  # Adjust arrow properties
-                    )
-                    axs[idx].add_patch(arrow)
-                    row, col = current_pos
-                    grid[row, col] = 1
-
-            # Set colors for visualization
-            cmap = plt.cm.get_cmap('viridis', len(agents) + 2)
-            cmap.set_under('white')
-            cmap.set_bad('red')
-
-            # Visualize the grid
-            axs[idx].imshow(grid, cmap=cmap, interpolation='nearest', vmin=-1, vmax=len(agents) + 1)
-
-            # Add gridlines
-            axs[idx].grid(color='black', linewidth=1)
-
-            # Add legend below the subplot
-            axs[idx].legend(handles=[plt.Line2D([0], [0], marker='s', color='w', label='Starting Point', markerfacecolor='black', markersize=15), 
-                                     plt.Line2D([0], [0], marker='o', color='w', label='Ending Point', markerfacecolor='red', markersize=15)], 
-                            loc='upper center', bbox_to_anchor=(0.5, -0.2))  # Adjust legend position
-
-            axs[idx].set_title(f'Agent {idx+1}')  # Set subplot title
-
-            # Mark starting and ending points
-            axs[idx].scatter(start_pos[1], start_pos[0], color='black', marker='s', s=100, label='Starting Point')  # Mark starting point
-            axs[idx].scatter(end_pos[1], end_pos[0], color='red', marker='o', s=100, label='Ending Point')  # Mark ending point
-            
-        plt.tight_layout()
-        plt.show()
-
-
-    def get_agent_paths(self, agents):
-        """
-        Get the paths of each agent and returns dictionary containing 
-        the paths of each agent, with agent ID as keys and paths as values.
-        """
-        agent_paths = {}
-        for agent in agents:
-            agent_paths[agent.id] = agent.path
-        return agent_paths
+            plt.title(f"Attractive Paths for Agent {i + 1}")
+            plt.axis('off')
+            plt.show() 

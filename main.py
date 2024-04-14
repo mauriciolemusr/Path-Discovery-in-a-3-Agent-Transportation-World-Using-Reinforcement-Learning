@@ -24,7 +24,7 @@ def main():
     for agent in agents:
         environment.add_agent(agent)
 
-    environment.visualize()
+    environment.visualize()  
 
     num_steps = 9000
     experiments = Experiments()
@@ -46,26 +46,33 @@ def main():
     print("Experiment 1a:")
     total_rewards_1a, total_distances_1a, total_successes_1a = experiments.run_experiment1a(environment, agents, num_steps, initial_agent_positions)
     result_printer.print_results(agents, total_rewards_1a, total_distances_1a, total_successes_1a, num_steps)
-    
-    # Visualize attractive paths for Experiment 1a
-    # Pick which ever one seems best
-    #result_printer.visualize_attractive_paths1(agents, environment)
-    #result_printer.visualize_attractive_paths2(agents, environment)
+    # Visualize attractive paths and position frquencies for Experiment 1a
+  #  result_printer.visualize_attractive_paths(agents, environment)
+    #result_printer.visualize_position_freq(environment)
 
     # Run Experiment 1b
     print("Experiment 1b:")
     total_rewards_1b, total_distances_1b, total_successes_1b = experiments.run_experiment1b(environment, agents, num_steps, initial_agent_positions)
     result_printer.print_results(agents, total_rewards_1b, total_distances_1b, total_successes_1b, num_steps)
+    # Visualize attractive paths and position frquencies for Experiment 1b
+    #result_printer.visualize_attractive_paths(agents, environment)
+   # result_printer.visualize_position_freq(environment)
 
     # Run Experiment 1c
     print("Experiment 1c:")
     total_rewards_1c, total_distances_1c, total_successes_1c = experiments.run_experiment1c(environment, agents, num_steps, initial_agent_positions)
     result_printer.print_results(agents, total_rewards_1c, total_distances_1c, total_successes_1c, num_steps)
+    # Visualize attractive paths and position frquencies for Experiment 1c
+   # result_printer.visualize_attractive_paths(agents, environment)
+   # result_printer.visualize_position_freq(environment)
 
     # Run Experiment 2
     print("Experiment 2:")
     total_rewards_2, total_distances_2, total_successes_2 = experiments.run_experiment2(environment, agents, num_steps, initial_agent_positions)
     result_printer.print_results_experiment2(agents, total_rewards_2, total_distances_2, total_successes_2, num_steps)
+    # Visualize attractive paths and position frquencies for Experiment 2
+    #result_printer.visualize_attractive_paths(agents, environment)
+   # result_printer.visualize_position_freq(environment)
 
     # Run Experiment 3 with different learning rates
     learning_rates = [0.15, 0.45]
@@ -73,6 +80,9 @@ def main():
         print(f"Experiment 3 (Learning Rate: {learning_rate}):")
         total_rewards_3, total_distances_3, total_successes_3 = experiments.run_experiment3(environment, agents, num_steps, initial_agent_positions, learning_rate)
         result_printer.print_results_experiment3(agents, total_rewards_3, total_distances_3, total_successes_3, num_steps, learning_rate)
+        # Visualize attractive paths and position frquencies for Experiment 3
+       # result_printer.visualize_attractive_paths(agents, environment)
+        #result_printer.visualize_position_freq(environment)
 
     # Run Experiment 4
     print("Experiment 4:")
@@ -85,5 +95,9 @@ def main():
         total_rewards_after_4, total_distances_after_4, total_successes_after_4, total_steps_after_4,
     )
 
+    # Visualize attractive paths and position frquencies for Experiment 4
+    #result_printer.visualize_attractive_paths(agents, environment)
+    #result_printer.visualize_position_freq(environment)
+
 if __name__ == "__main__":
-    main()
+    main() 
