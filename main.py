@@ -24,7 +24,7 @@ def main():
     for agent in agents:
         environment.add_agent(agent)
 
-    # environment.visualize() #NEED TO FIX THIS
+    environment.visualize() #NEED TO FIX THIS
 
     num_steps = 9000
     experiments = Experiments()

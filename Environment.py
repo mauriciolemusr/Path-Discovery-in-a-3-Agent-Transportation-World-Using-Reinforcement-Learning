@@ -1,5 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt  # For visualization
+from matplotlib.colors import ListedColormap
 
 class Environment:
     def __init__(self, grid_size, pickup_locations, dropoff_locations):
@@ -107,22 +108,59 @@ class Environment:
         return False
 
     # Visualizes the environment grid, pickup locations, dropoff locations, and agent positions.
-    def visualize(self):
-        fig, ax = plt.subplots()
-        ax.imshow(self.grid, cmap='binary')
+    # def visualize(self):
+    #     fig, ax = plt.subplots()
+    #     ax.imshow(self.grid, cmap='binary')
 
+    #     for pickup_location in self.pickup_locations:
+    #         ax.text(pickup_location[1], pickup_location[0], 'P', ha='center', va='center', color='blue')
+
+    #     for dropoff_location in self.dropoff_locations:
+    #         ax.text(dropoff_location[1], dropoff_location[0], 'D', ha='center', va='center', color='green')
+
+    #     for agent in self.agents:
+    #         x, y = agent.position
+    #         ax.text(y, x, 'A', ha='center', va='center', color='red')
+
+    #     ax.set_xticks([])
+    #     ax.set_yticks([])
+    #     ax.set_title('Environment')
+
+    #     plt.show()
+
+    # Visualizes the environment grid, pickup locations, drop-off locations, and agent positions from the environment class.
+    def visualize(self):
+        # Define the color map for the grid
+        cmap = ListedColormap(['white'])
+        
+        # Create a figure and axis with a specified size
+        fig, ax = plt.subplots(figsize=(8, 8))
+        
+        # Plot the grid with custom color maps
+        ax.matshow(self.grid, cmap=cmap)
+        
+        # Loop over the data dimensions and create text annotations
         for pickup_location in self.pickup_locations:
-            ax.text(pickup_location[1], pickup_location[0], 'P', ha='center', va='center', color='blue')
+            ax.text(pickup_location[1], pickup_location[0], 'P', ha='center', va='center', color='blue', fontsize=14, weight='bold')
 
         for dropoff_location in self.dropoff_locations:
-            ax.text(dropoff_location[1], dropoff_location[0], 'D', ha='center', va='center', color='green')
+            ax.text(dropoff_location[1], dropoff_location[0], 'D', ha='center', va='center', color='green', fontsize=14, weight='bold')
 
         for agent in self.agents:
             x, y = agent.position
-            ax.text(y, x, 'A', ha='center', va='center', color='red')
+            ax.text(y, x, 'A', ha='center', va='center', color='red', fontsize=14, weight='bold')
+        
+        # Draw grid lines
+        ax.set_xticks(np.arange(-0.5, self.grid_size[1], 1), minor=True)
+        ax.set_yticks(np.arange(-0.5, self.grid_size[0], 1), minor=True)
+        ax.grid(which='minor', color='black', linestyle='-', linewidth=2)
+        ax.grid(which='major', color='white', linestyle='', linewidth=0)
+        
+        # Hide the major tick labels
+        ax.tick_params(which='both', bottom=False, left=False, labelbottom=False, labelleft=False)
 
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_title('Environment')
+        # Set the title
+        ax.set_title('Environment', fontsize=16, weight='bold')
 
+        # Display the plot
         plt.show()
