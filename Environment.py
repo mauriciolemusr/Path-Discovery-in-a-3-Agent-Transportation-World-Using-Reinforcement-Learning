@@ -1,6 +1,8 @@
 import numpy as np 
 import matplotlib.pyplot as plt  # For visualization
 from matplotlib.colors import ListedColormap
+from matplotlib.patches import FancyArrowPatch
+from mpl_toolkits.mplot3d import Axes3D
 
 class Environment:
     def __init__(self, grid_size, pickup_locations, dropoff_locations):
@@ -108,6 +110,48 @@ class Environment:
         return False
 
 
+    # Method to visualize the agent's path on the grid.
+    def visualize_agent_path(self, agent, path):
+        fig, ax = plt.subplots()
+        ax.set_xticks(np.arange(-0.5, self.grid_size[0], 1))
+        ax.set_yticks(np.arange(-0.5, self.grid_size[1], 1))
+        ax.grid(which='both')
+        ax.set_aspect('equal')
+        ax.imshow(self.grid, cmap='Greys', origin='lower')
+
+        # Mark starting point
+        start_x, start_y = path[0]
+        ax.plot(start_x, start_y, 'ro', markersize=10)
+
+        # Mark ending point
+        end_x, end_y = path[-1]
+        ax.plot(end_x, end_y, 'bo', markersize=10)
+
+        # Draw arrows and color cells
+        for i in range(len(path) - 1):
+            x, y = path[i]
+            next_x, next_y = path[i + 1]
+            dx = next_x - x
+            dy = next_y - y
+            ax.arrow(x, y, dx, dy, head_width=0.2, head_length=0.2, fc='k', ec='k')
+
+        # Set colors for visualization
+        cmap = plt.cm.get_cmap('cool')
+        norm = plt.Normalize(0, len(path))
+        for i, (x, y) in enumerate(path):
+            ax.add_patch(plt.Rectangle((x - 0.5, y - 0.5), 1, 1, color=cmap(norm(i))))
+
+        # Add legend
+        legend_elements = [
+            plt.Line2D([0], [0], marker='o', color='w', label='Starting Point', markerfacecolor='r', markersize=10),
+            plt.Line2D([0], [0], marker='o', color='w', label='Ending Point', markerfacecolor='b', markersize=10),
+            FancyArrowPatch((0,0), (1,1), color='black', label='Agent Path', arrowstyle='-|>', mutation_scale=15)
+        ]
+        ax.legend(handles=legend_elements, loc='upper right')
+
+        plt.show()
+
+
     # Visualizes the environment grid, pickup locations, drop-off locations, and agent positions from the environment class.
     def visualize(self):
         # Define the color map for the grid
@@ -121,14 +165,14 @@ class Environment:
         
         # Loop over the data dimensions and create text annotations
         for pickup_location in self.pickup_locations:
-            ax.text(pickup_location[1], pickup_location[0], 'P', ha='center', va='center', color='blue', fontsize=14, weight='bold')
+            ax.text(pickup_location[1], pickup_location[0], 'Pickup', ha='center', va='center', color='blue', fontsize=12, weight='bold')
 
         for dropoff_location in self.dropoff_locations:
-            ax.text(dropoff_location[1], dropoff_location[0], 'D', ha='center', va='center', color='green', fontsize=14, weight='bold')
+            ax.text(dropoff_location[1], dropoff_location[0], 'Dropoff', ha='center', va='center', color='green', fontsize=12, weight='bold')
 
         for agent in self.agents:
             x, y = agent.position
-            ax.text(y, x, 'A', ha='center', va='center', color='red', fontsize=14, weight='bold')
+            ax.text(y, x, 'Agent', ha='center', va='center', color='red', fontsize=12, weight='bold')
         
         # Draw grid lines
         ax.set_xticks(np.arange(-0.5, self.grid_size[1], 1), minor=True)

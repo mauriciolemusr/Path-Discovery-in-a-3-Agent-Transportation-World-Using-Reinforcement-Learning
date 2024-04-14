@@ -24,7 +24,7 @@ def main():
     for agent in agents:
         environment.add_agent(agent)
 
-    environment.visualize() #NEED TO FIX THIS
+    environment.visualize()
 
     num_steps = 9000
     experiments = Experiments()
@@ -48,7 +48,9 @@ def main():
     result_printer.print_results(agents, total_rewards_1a, total_distances_1a, total_successes_1a, num_steps)
     
     # Visualize attractive paths for Experiment 1a
-    result_printer.visualize_attractive_paths(agents, environment)
+    # Pick which ever one seems best
+    #result_printer.visualize_attractive_paths1(agents, environment)
+    #result_printer.visualize_attractive_paths2(agents, environment)
 
     # Run Experiment 1b
     print("Experiment 1b:")

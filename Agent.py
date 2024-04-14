@@ -1,6 +1,8 @@
 import numpy as np
 
 class Agent:
+    agent_count = 10
+
     def __init__(self, initial_position, learning_rate, discount_factor):
         # Initializing the Agent class with its initial position, learning rate, discount factor, an empty Q-table, and not carrying any block.
         self.position = initial_position
@@ -8,10 +10,17 @@ class Agent:
         self.discount_factor = discount_factor
         self.q_table = {}
         self.carrying_block = False
+        self.path = [initial_position]
+        Agent.agent_count += 1
+        self.id = Agent.agent_count
+        self.total_reward = 0  # New attribute to track total reward
 
+        
     # Resetting the agent's state by setting it to not carrying any block.
     def reset(self):
         self.carrying_block = False
+        self.path = [self.position]
+        self.total_reward = 0
 
     # Choosing an action for the agent based on a given policy.
     def choose_action(self, environment, policy):
@@ -37,8 +46,10 @@ class Agent:
             else:  # With 20% probability, explore by choosing randomly from available actions.
                 return np.random.choice(available_actions)
 
-           
-    # Updating the Q-table based on the state, action, reward, and the next state.
+    def update_total_reward(self, reward):
+        self.total_reward += reward
+
+
     def update_q_table(self, state, action, reward, next_state, learning_rate):
         if state not in self.q_table:
             self.q_table[state] = {a: 0.0 for a in ['up', 'down', 'left', 'right', 'pickup', 'dropoff']}
@@ -52,6 +63,10 @@ class Agent:
         new_value = (1 - learning_rate) * old_value + learning_rate * (reward + self.discount_factor * next_max)
         self.q_table[state][action] = new_value  # Assigning the new Q-value to the Q-table
 
+        # Update the path with the next position
+        next_agent_pos, _, _ = next_state
+        self.path.append(next_agent_pos)
+
     def update_q_table_sarsa(self, state, action, reward, next_state, next_action):
             if state not in self.q_table:
                 self.q_table[state] = {a: 0.0 for a in ['up', 'down', 'left', 'right', 'pickup', 'dropoff']}
@@ -64,3 +79,6 @@ class Agent:
             # Updating the Q-value using the SARSA algorithm
             new_value = (1 - self.learning_rate) * old_value + self.learning_rate * (reward + self.discount_factor * next_value)
             self.q_table[state][action] = new_value  # Assigning the new Q-value to the Q-table
+
+            # Update the path with the next position
+            self.path.append(next_state)
