@@ -29,6 +29,7 @@ class ResultPrinter:
             q_table_df = pd.DataFrame.from_dict(q_table_dict, orient='index')
             q_table_df.index.name = 'State'
             q_table_df = q_table_df.apply(lambda x: x.apply(lambda y: '{:.3f}'.format(y)))
+            q_table_df.sort_index(inplace=True)
             print(q_table_df.to_string(index=True))
             print()
 
@@ -58,6 +59,7 @@ class ResultPrinter:
             q_table_df = pd.DataFrame.from_dict(q_table_dict, orient='index')
             q_table_df.index.name = 'State'
             q_table_df = q_table_df.apply(lambda x: x.apply(lambda y: '{:.3f}'.format(y)))
+            q_table_df.sort_index(inplace=True)
             print(q_table_df.to_string(index=True))
             print()
 
@@ -87,6 +89,7 @@ class ResultPrinter:
             q_table_df = pd.DataFrame.from_dict(q_table_dict, orient='index')
             q_table_df.index.name = 'State'
             q_table_df = q_table_df.apply(lambda x: x.apply(lambda y: '{:.3f}'.format(y)))
+            q_table_df.sort_index(inplace=True)
             print(q_table_df.to_string(index=True))
             print()
 
@@ -138,6 +141,7 @@ class ResultPrinter:
             q_table_df = pd.DataFrame.from_dict(q_table_dict, orient='index')
             q_table_df.index.name = 'State'
             q_table_df = q_table_df.apply(lambda x: x.apply(lambda y: '{:.3f}'.format(y)))
+            q_table_df.sort_index(inplace=True)
             print(q_table_df.to_string(index=True))
             print()
 
