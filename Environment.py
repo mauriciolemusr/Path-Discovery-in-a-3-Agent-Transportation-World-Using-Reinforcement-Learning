@@ -107,26 +107,6 @@ class Environment:
             return True
         return False
 
-    # Visualizes the environment grid, pickup locations, dropoff locations, and agent positions.
-    # def visualize(self):
-    #     fig, ax = plt.subplots()
-    #     ax.imshow(self.grid, cmap='binary')
-
-    #     for pickup_location in self.pickup_locations:
-    #         ax.text(pickup_location[1], pickup_location[0], 'P', ha='center', va='center', color='blue')
-
-    #     for dropoff_location in self.dropoff_locations:
-    #         ax.text(dropoff_location[1], dropoff_location[0], 'D', ha='center', va='center', color='green')
-
-    #     for agent in self.agents:
-    #         x, y = agent.position
-    #         ax.text(y, x, 'A', ha='center', va='center', color='red')
-
-    #     ax.set_xticks([])
-    #     ax.set_yticks([])
-    #     ax.set_title('Environment')
-
-    #     plt.show()
 
     # Visualizes the environment grid, pickup locations, drop-off locations, and agent positions from the environment class.
     def visualize(self):
