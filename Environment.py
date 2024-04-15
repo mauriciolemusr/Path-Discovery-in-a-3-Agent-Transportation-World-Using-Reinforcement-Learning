@@ -127,7 +127,7 @@ class Environment:
     # Visualizes the environment grid, pickup locations, drop-off locations, and agent positions from the environment class.
     def visualize(self):
         # Define the color map for the grid
-        cmap = ListedColormap(['white', 'gray', 'red', 'blue', 'green'])  # Update the color map
+        cmap = ListedColormap(['white'])
         
         # Create a figure and axis with a specified size
         fig, ax = plt.subplots(figsize=(8, 8))
@@ -137,14 +137,14 @@ class Environment:
         
         # Loop over the data dimensions and create text annotations
         for pickup_location in self.pickup_locations:
-            ax.text(pickup_location[1], pickup_location[0], f'P({self.grid[pickup_location]})', ha='center', va='center', color='black', fontsize=10)  # Update the text annotation
+            ax.text(pickup_location[1], pickup_location[0], 'Pickup', ha='center', va='center', color='blue', fontsize=12, weight='bold')
 
         for dropoff_location in self.dropoff_locations:
-            ax.text(dropoff_location[1], dropoff_location[0], f'D({self.dropoff_counts[dropoff_location]})', ha='center', va='center', color='black', fontsize=10)  # Update the text annotation
+            ax.text(dropoff_location[1], dropoff_location[0], 'Dropoff', ha='center', va='center', color='green', fontsize=12, weight='bold')
 
-        for i, agent in enumerate(self.agents):
+        for agent in self.agents:
             x, y = agent.position
-            ax.text(y, x, f'A{i+1}', ha='center', va='center', color='white', fontsize=10)  # Update the text annotation
+            ax.text(y, x, 'Agent', ha='center', va='center', color='red', fontsize=12, weight='bold')
         
         # Draw grid lines
         ax.set_xticks(np.arange(-0.5, self.grid_size[1], 1), minor=True)
@@ -156,8 +156,8 @@ class Environment:
         ax.tick_params(which='both', bottom=False, left=False, labelbottom=False, labelleft=False)
 
         # Set the title
-        ax.set_title('Environment', fontsize=16)
+        ax.set_title('Environment', fontsize=16, weight='bold')
 
         # Display the plot
-        plt.show() 
+        plt.show()
 

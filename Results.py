@@ -161,7 +161,7 @@ class ResultPrinter:
             sns.heatmap(agent.position_frequency, annot=True, fmt='g')
             plt.show()        
 
-    # visualize_attractive_paths function visualizes the most attractive paths for each grid space based on highest q-table value
+    # visualize_attractive_paths function visualizes the most attractive paths for each grid space based on highest q-table value - NOT USED
     def visualize_attractive_paths(self, agents, environment):
         """
         Visualize attractive paths based on learned Q-values.
