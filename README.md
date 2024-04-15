@@ -2,8 +2,9 @@
 
 
 ## Overview
-
-Write something here
+This file serves as a README and provides instructions on how to execute our code submission for the COSC4368 - Path Discovery in a 3-Agent Transportation 
+World Using Reinforcement Learning Group Project. 
+Group members are: Joshua Akponor, Timothy Chou, Mauricio Lemus Rochin, Ashish B. Singh. 
 
 ## Folder Structure
 
